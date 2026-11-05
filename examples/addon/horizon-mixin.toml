@@ -1,0 +1,21 @@
+# Build alongside the liasmediaplayer bundle, never alone.
+[mod]
+id = "example_radio"
+version = "1.0.0"
+priority = 200
+
+[compatibility]
+horizon_revision = "6475f62f3c834b7489e1816bf47f47ea5eb2b879"
+
+[[module]]
+id = "addon"
+file = "crates/horizon-client/src/game.rs"
+name = "example_radio"
+source = "addon.rs"
+
+[[injection]]
+id = "register"
+hook = "mods"
+hook_version = 1
+kind = "HEAD"
+helper = "init.rs"

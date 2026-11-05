@@ -1,0 +1,271 @@
+# Lia's Media Player — Horizon Native Mod Manifest (Milestone 7)
+# Uses catalog hook points (`native-hooks.json`) and a dedicated workspace crate (`[[crate]]`).
+
+[mod]
+id = "liasmediaplayer"
+version = "4.0.0"
+priority = 100
+
+[compatibility]
+horizon_revision = "6475f62f3c834b7489e1816bf47f47ea5eb2b879"
+
+# The mod's own crate, staged as `native-crates/liasmediaplayer/lias_media_player/`
+# and added as a dependency of `horizon-client`.
+[[crate]]
+id = "lias_media_player"
+path = "lias_media_player"
+
+# Support module injected into `crates/horizon-client/src/game.rs` as
+# `pub(crate) mod liasmediaplayer_bridge`.
+[[module]]
+id = "bridge"
+file = "crates/horizon-client/src/game.rs"
+name = "liasmediaplayer_bridge"
+source = "bridge.rs"
+
+# --- Catalog Hook Points (`native-hooks.json`, hook_version = 1) ---
+
+[[injection]]
+id = "mods"
+hook = "mods"
+hook_version = 1
+kind = "HEAD"
+helper = "mods.rs"
+bindings = [
+  { name = "mods", ty = "&mut Vec<crate::game::native_hooks::NativeMod>", value = "&mut *mods" },
+]
+
+[[injection]]
+id = "settings"
+hook = "settings"
+hook_version = 1
+kind = "HEAD"
+helper = "settings.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "buttons", ty = "&mut Vec<String>", value = "&mut *buttons" },
+]
+
+[[injection]]
+id = "settings_click"
+hook = "settings_click"
+hook_version = 1
+kind = "HEAD"
+helper = "settings_click.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "button", ty = "usize", value = "button" },
+]
+
+[[injection]]
+id = "commands"
+hook = "commands"
+hook_version = 1
+kind = "HEAD"
+helper = "commands.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "commands", ty = "&mut Vec<&'static str>", value = "&mut *commands" },
+]
+
+[[injection]]
+id = "command"
+hook = "command"
+hook_version = 1
+kind = "HEAD"
+helper = "command.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "command", ty = "&str", value = "command" },
+  { name = "ran", ty = "&mut bool", value = "&mut *ran" },
+]
+
+[[injection]]
+id = "tick"
+hook = "tick"
+hook_version = 1
+kind = "HEAD"
+helper = "tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+[[injection]]
+id = "frame"
+hook = "frame"
+hook_version = 1
+kind = "HEAD"
+helper = "frame.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "elapsed", ty = "std::time::Duration", value = "elapsed" },
+]
+
+[[injection]]
+id = "hud"
+hook = "hud"
+hook_version = 1
+kind = "HEAD"
+helper = "hud.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+  { name = "corners", ty = "&mut horizon_client::extras_hud::Corners", value = "&mut *corners" },
+]
+
+[[injection]]
+id = "key"
+hook = "key"
+hook_version = 1
+kind = "HEAD"
+helper = "key.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "key", ty = "&str", value = "key" },
+  { name = "pressed", ty = "bool", value = "pressed" },
+]
+
+[[injection]]
+id = "world_unload"
+hook = "client_level_unload"
+hook_version = 1
+kind = "HEAD"
+helper = "world_unload.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "dimension", ty = "&str", value = "dimension" },
+]
+
+[[injection]]
+id = "screen_render_post"
+hook = "screen_render_post"
+hook_version = 1
+kind = "HEAD"
+helper = "screen_render_post.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+  { name = "screen", ty = "&crate::game::native_hooks::NativeScreenView<'_>", value = "screen" },
+]
+
+[[injection]]
+id = "screen_mouse_button_pressed_pre"
+hook = "screen_mouse_button_pressed_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "screen_mouse_button_pressed_pre.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "screen", ty = "&crate::game::native_hooks::NativeScreenView<'_>", value = "screen" },
+  { name = "button", ty = "i32", value = "button" },
+  { name = "modifiers", ty = "u32", value = "modifiers" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "screen_mouse_button_released_pre"
+hook = "screen_mouse_button_released_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "screen_mouse_button_released_pre.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "screen", ty = "&crate::game::native_hooks::NativeScreenView<'_>", value = "screen" },
+  { name = "button", ty = "i32", value = "button" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "screen_mouse_dragged_pre"
+hook = "screen_mouse_dragged_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "screen_mouse_dragged_pre.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "screen", ty = "&crate::game::native_hooks::NativeScreenView<'_>", value = "screen" },
+  { name = "button", ty = "i32", value = "button" },
+  { name = "modifiers", ty = "u32", value = "modifiers" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "screen_mouse_scrolled_pre"
+hook = "screen_mouse_scrolled_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "screen_mouse_scrolled_pre.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "screen", ty = "&crate::game::native_hooks::NativeScreenView<'_>", value = "screen" },
+  { name = "scroll", ty = "[f64; 2]", value = "scroll" },
+  { name = "modifiers", ty = "u32", value = "modifiers" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "screen_key_pressed_pre"
+hook = "screen_key_pressed_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "screen_key_pressed_pre.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "key", ty = "&str", value = "key" },
+  { name = "modifiers", ty = "u32", value = "modifiers" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "screen_char_typed_pre"
+hook = "screen_char_typed_pre"
+hook_version = 1
+kind = "HEAD"
+helper = "screen_char_typed_pre.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "c", ty = "char", value = "c" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "client_resources_reloaded"
+hook = "client_resources_reloaded"
+hook_version = 1
+kind = "HEAD"
+helper = "client_resources_reloaded.rs"
+bindings = [
+]
+
+# API 359 predates client_chat_received. Transform the display copy at wrap time:
+# covers local/system/signed chat and rewraps, preserving stored messages and signatures.
+[[module]]
+id = "chat_transform"
+file = "crates/horizon-client-render/src/chat.rs"
+name = "liasmediaplayer_chat_transform"
+source = "chat_transform.rs"
+visibility = "pub"
+
+[[injection]]
+id = "chat_display"
+target = "horizon_client_render::chat::Chat::displayed"
+kind = "RETURN"
+helper = "chat_received.rs"
+bindings = [
+  { name = "message", ty = "Text", value = "$value" },
+]
+
+# The commands catalog hook only supplies root names. Add argument suggestions
+# to the completed client tree; pinned to the compatibility revision above.
+[[injection]]
+id = "command_tree"
+target = "horizon_client::game::chat::with_native_commands"
+kind = "RETURN"
+helper = "command_tree.rs"
+bindings = [
+  { name = "tree", ty = "horizon_client::command::Dispatcher", value = "$value" },
+  { name = "base", ty = "&horizon_client::command::Dispatcher", value = "base" },
+  { name = "names", ty = "&[&str]", value = "names" },
+]

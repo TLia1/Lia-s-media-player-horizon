@@ -1,0 +1,3 @@
+[workspace]
+members = ["mixins/liasmediaplayer/lias_media_player"]
+resolver = "2"

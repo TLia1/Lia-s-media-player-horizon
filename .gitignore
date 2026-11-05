@@ -1,0 +1,6 @@
+/target/
+*.hnmod
+__pycache__/
+*.pyc
+*.hnmod.sha256
+*.hnmod.minisig
